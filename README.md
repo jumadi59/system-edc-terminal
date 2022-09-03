@@ -298,17 +298,14 @@ override fun onResult(result: PrepaidResult?) {
             Log.d("PREPAID_TAPCASH", "data   : $data")
         }
         PrepaidHelperImpl.PREPAID_EMONEY -> {
-            binding.logoPrepaid.setImageResource(R.drawable.e_money)
             val data = (result as EMoneyResult).toCardData()
             Log.d("PREPAID_EMONEY", "data   : $data")
         }
         PrepaidHelperImpl.PREPAID_BRIZZI -> {
-            binding.logoPrepaid.setImageResource(R.drawable.card_brizzi)
             val data = (result as BrizziResult).toCardData()
             Log.d("PREPAID_BRIZZI", "data   : $data")
         }
         PrepaidHelperImpl.PREPAID_FLAZZ -> {
-            binding.logoPrepaid.setImageResource(R.drawable.card_flazz)
             val data = (result as FlazzResult).toCardData()
             Log.d("PREPAID_FLAZZ", "data   : $data")
         }

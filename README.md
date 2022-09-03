@@ -265,22 +265,22 @@ override fun onResult(result: PrepaidResult?) {
     RFCardManager.getInstance().close()
     when (result.binName) {
         PrepaidHelperImpl.PREPAID_TAPCASH -> {
-            val data = (result as PrepaidResult.TapCashResult).toCardData()
+            val data = (result as TapCashResult).toCardData()
             Log.d("PREPAID_TAPCASH", "data   : $data")
         }
         PrepaidHelperImpl.PREPAID_EMONEY -> {
             binding.logoPrepaid.setImageResource(R.drawable.e_money)
-            val data = (result as PrepaidResult.EMoneyResult).toCardData()
+            val data = (result as EMoneyResult).toCardData()
             Log.d("PREPAID_EMONEY", "data   : $data")
         }
         PrepaidHelperImpl.PREPAID_BRIZZI -> {
             binding.logoPrepaid.setImageResource(R.drawable.card_brizzi)
-            val data = (result as PrepaidResult.BrizziResult).toCardData()
+            val data = (result as BrizziResult).toCardData()
             Log.d("PREPAID_BRIZZI", "data   : $data")
         }
         PrepaidHelperImpl.PREPAID_FLAZZ -> {
             binding.logoPrepaid.setImageResource(R.drawable.card_flazz)
-            val data = (result as PrepaidResult.FlazzResult).toCardData()
+            val data = (result as FlazzResult).toCardData()
             Log.d("PREPAID_FLAZZ", "data   : $data")
         }
         else -> {}

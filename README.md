@@ -8,7 +8,7 @@ Support Feature:
 - SAM
 - EMV Credit/Debit
 
-Requirment:
+Requirement:
 - Minimum Android SDK 21
 
 ### Android Library
@@ -27,10 +27,10 @@ dependencies {
 }
 ```
 
-      
+
 ### Sample Code
 
-Intitalize
+Initialize
 ```kotlin
 DeviceHelper.getInstance().connect(this) {
             if (it) {
@@ -65,11 +65,12 @@ CoroutineScope(Dispatchers.IO).launch {
 ```
 
 Emv Read Card
+
 ```kotlin
 val emv = DeviceHelper.getInstance().emvConfiguration
-emv.configuration(this, {
-   Log.d("EMV", "Please insert/swipe card")
-   emvConfiguration.startReadCard(amount, object : TransactionResponse {
+emv.configuration(this) {
+    Log.d("EMV", "Please insert/swipe card")
+    emvConfiguration.startReadCard(amount, object : TransactionResponse {
         override fun onSearchCard(cardType: Int, trackData: TrackData) {
             Log.d("EMV", "getTrack1Data ${trackData.track1Data}")
             Log.d("EMV", "getTrack1Data ${trackData.track2Data}")
@@ -96,7 +97,7 @@ emv.configuration(this, {
             Log.d("EMV", "onError code $code message $message")
         }
     })
-})
+}
 ```
 EMV Input PIN
 
@@ -156,7 +157,7 @@ RFCardManager.getInstance().start( object : OnReadListener<String> {
 
 Prepaid Setting
 ```kotlin
-startActivity(Intent(activity, SettingsActivity::class.java)
+startActivity(Intent(activity, SettingsActivity::class.java))
 
 //custom setting
 val module = PrepaidModule(context)
@@ -171,13 +172,13 @@ module.pref.edit().putString("index_{slot}", "bri_brizzi_bin").apply()
 module.pref.edit().putString("index_{slot}", "bca_flazz_bin").apply()
 ```
 
-Prepaid Ceck Balance
+Prepaid Check Balance
 ```kotlin
 val module = PrepaidModule(context)
-...
+
             override suspend fun onRead(rfCardHelper: BaseRFCardHelper): BalanceResult {
                 Log.d("RFCardManager", "onRead")
-                val prepaidHelperImpl = PrepaidHelperV2(module, rfCardHelper).addTronCard(rfCardHelper)
+                val prepaidHelperImpl = PrepaidHelperV2(module, rfCardHelper)
                 val aid = prepaidHelperImpl.findAid { mockPrepaidInfo(it) }
                 outputView.setOutput("Aid: ${aid?.binName}", 4)
                 return prepaidHelperImpl.checkBalance()
@@ -188,35 +189,56 @@ val module = PrepaidModule(context)
                 if (result != null) {
                 Log.d("RFCardManager", "Card number    : ${result.binName}")
                 Log.d("RFCardManager", "Card number    : ${result.cardNo}")
-                Log.d("RFCardManager", "Balance        : ${result.balanceRupiah")
+                Log.d("RFCardManager", "Balance        : ${result.balanceRupiah}")
                 Log.d("RFCardManager", "Time           : ${RFCardManager.getInstance().processTimeMillis / 1000}s")
                 }
                 RFCardManager.getInstance().close()
             }
-...
+
 ```
 
 Prepaid Payment
 ```kotlin
 val module = PrepaidModule(context)
 fun mockPrepaidInfo(aidCode: AidCode) = PrepaidInfo(id = 0, aid = "1122334455", binName = aidCode.binName, bankName = "", bankLogo = null, prepaidName = "", prepaidLogo = null, mid = "000100012001946", tid = "12194619")
-...
+
             override suspend fun onRead(rfCardHelper: BaseRFCardHelper): PrepaidResult {
-                prepaidHelperImpl = PrepaidHelperV2(module, rfCardHelper).addTronCard(rfCardHelper)
+                prepaidHelperImpl = PrepaidHelperV2(module, rfCardHelper)
                 val aid = prepaidHelperImpl.findAid { mockPrepaidInfo(it) }
                 outputView.setOutput("Aid: ${aid?.binName}", 4)
                 return prepaidHelperImpl.payment(1, "00000000")
+            }
                 
             override fun onResult(result: BalanceResult?) {
                 Log.d("RFCardManager", "onResult")
                 if (result != null) {
                 Log.d("RFCardManager", "Card number    : ${result.binName}")
                 Log.d("RFCardManager", "Card number    : ${result.cardNo}")
-                Log.d("RFCardManager", "Last Balance   : ${result.lastBalance")
-                Log.d("RFCardManager", "Current Balance: ${result.currentBalance")
+                Log.d("RFCardManager", "Last Balance   : ${result.lastBalance}")
+                Log.d("RFCardManager", "Current Balance: ${result.currentBalance}")
                 Log.d("RFCardManager", "Time           : ${RFCardManager.getInstance().processTimeMillis / 1000}s")
                 }
                 RFCardManager.getInstance().close()
             }
-..
+```
+Add Card Prepaid
+```kotlin
+val module = PrepaidModule(context)
+module.addProvideService(TronCardComponent.BIN_NAME, object : TronCashImpl() {
+    override fun balance(can: ByteArray): Long = 1000000
+
+    override fun deduct(can: ByteArray, amount: Long): Long = 1000000 - amount
+})
+
+fun PrepaidHelperImplV2.addTronCard(rfCardHelper: BaseRFCardHelper) : PrepaidHelperImplV2 {
+    addComponent(TronCardComponent().apply { init(TronCashHelper(rfCardHelper), module.getProvideService(TronCardComponent.BIN_NAME)!! as TronCashImpl) })
+    return this
+}
+
+override suspend fun onRead(rfCardHelper: BaseRFCardHelper): PrepaidResult {
+    prepaidHelperImpl = PrepaidHelperV2(module, rfCardHelper).addTronCard(rfCardHelper)
+    val aid = prepaidHelperImpl.findAid { mockPrepaidInfo(it) }
+    outputView.setOutput("Aid: ${aid?.binName}", 4)
+    return prepaidHelperImpl.payment(1, "00000000")
+}
 ```

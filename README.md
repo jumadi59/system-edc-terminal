@@ -194,7 +194,17 @@ Prepaid Check Balance
 
 ```kotlin
 val module = PrepaidModule(context)
-
+fun mockPrepaidInfo(aidCode: AidCode) = PrepaidInfo(
+    id = 0,
+    aid = "1122334455",
+    binName = aidCode.binName,
+    bankName = "",
+    bankLogo = null,
+    prepaidName = "",
+    prepaidLogo = null,
+    mid = "000100012001946",
+    tid = "12194619"
+)
 override suspend fun onRead(rfCardHelper: BaseRFCardHelper): BalanceResult {
     Log.d("RFCardManager", "onRead")
     val prepaidHelperImpl = PrepaidHelperV2(module, rfCardHelper)
@@ -258,7 +268,26 @@ override fun onResult(result: PrepaidResult?) {
 }
 ```
 
+Prepaid SAM Cloud
+
+```kotlin
+// Check Balance
+override suspend fun onRead(rfCardHelper: BaseRFCardHelper): BalanceResult {
+    prepaidHelperImpl = PrepaidSamCloudHelperV2(module, rfCardHelper)
+    val aid = prepaidHelperImpl.findAid { mockPrepaidInfo(it) }
+    return prepaidHelperImpl.checkBalance()
+}
+
+// payment
+override suspend fun onRead(rfCardHelper: BaseRFCardHelper): PrepaidResult {
+    prepaidHelperImpl = PrepaidSamCloudHelperV2(module, rfCardHelper)
+    val aid = prepaidHelperImpl.findAid { mockPrepaidInfo(it) }
+    return prepaidHelperImpl.payment(1, "0000000000")
+}
+```
+
 Data Card
+
 ```kotlin
 override fun onResult(result: PrepaidResult?) {
     Log.d("RFCardManager", "onResult")
@@ -311,7 +340,6 @@ fun PrepaidHelperImplV2.addTronCard(rfCardHelper: BaseRFCardHelper): PrepaidHelp
 override suspend fun onRead(rfCardHelper: BaseRFCardHelper): PrepaidResult {
     prepaidHelperImpl = PrepaidHelperV2(module, rfCardHelper).addTronCard(rfCardHelper)
     val aid = prepaidHelperImpl.findAid { mockPrepaidInfo(it) }
-    outputView.setOutput("Aid: ${aid?.binName}", 4)
     return prepaidHelperImpl.payment(1, "00000000")
 }
 ```

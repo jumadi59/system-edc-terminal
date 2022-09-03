@@ -52,7 +52,7 @@ DeviceHelper.getInstance().connect(this) {
 Printer
 
 ```kotlin
-val printtModels = mutableListOf<PrintEntity>()
+val printModels = mutableListOf<PrintEntity>()
 // fontSize 0 = normal, 1 = small
 // align 0 = left, 1 center, 2 = right
 printtModels.add(
@@ -77,6 +77,16 @@ CoroutineScope(Dispatchers.IO).launch {
         Log.d("Printer", "print error $it")
     })
 }
+```
+
+LED
+```kotlin
+// -1 not duration
+val duration = 6 * 1000
+DeviceHelper.getInstance().ledHelper.ledRead(duration).start()
+DeviceHelper.getInstance().ledHelper.ledYellow(duration).start()
+DeviceHelper.getInstance().ledHelper.ledGreen(duration).start()
+DeviceHelper.getInstance().ledHelper.ledBlue(duration).start()
 ```
 
 Emv Read Card

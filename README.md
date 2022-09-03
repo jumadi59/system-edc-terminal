@@ -62,7 +62,7 @@ CoroutineScope(Dispatchers.IO).launch {
         Log.d("Printer", "print error $it")
     })
 }
-``
+```
 
 Emv Read Card
 ```kotlin
@@ -156,7 +156,6 @@ RFCardManager.getInstance().start( object : OnReadListener<String> {
 
 Prepaid Setting
 ```kotlin
-
 startActivity(Intent(activity, SettingsActivity::class.java)
 
 //custom setting
@@ -195,4 +194,9 @@ val module = PrepaidModule(context)
                 RFCardManager.getInstance().close()
             }
 ...
+```
+
+Prepaid Payment
+```kotlin
+
 ```

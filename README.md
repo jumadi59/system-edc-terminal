@@ -198,5 +198,25 @@ val module = PrepaidModule(context)
 
 Prepaid Payment
 ```kotlin
-
+val module = PrepaidModule(context)
+fun mockPrepaidInfo(aidCode: AidCode) = PrepaidInfo(id = 0, aid = "1122334455", binName = aidCode.binName, bankName = "", bankLogo = null, prepaidName = "", prepaidLogo = null, mid = "000100012001946", tid = "12194619")
+...
+            override suspend fun onRead(rfCardHelper: BaseRFCardHelper): PrepaidResult {
+                prepaidHelperImpl = PrepaidHelperV2(module, rfCardHelper).addTronCard(rfCardHelper)
+                val aid = prepaidHelperImpl.findAid { mockPrepaidInfo(it) }
+                outputView.setOutput("Aid: ${aid?.binName}", 4)
+                return prepaidHelperImpl.payment(1, "00000000")
+                
+            override fun onResult(result: BalanceResult?) {
+                Log.d("RFCardManager", "onResult")
+                if (result != null) {
+                Log.d("RFCardManager", "Card number    : ${result.binName}")
+                Log.d("RFCardManager", "Card number    : ${result.cardNo}")
+                Log.d("RFCardManager", "Last Balance   : ${result.lastBalance")
+                Log.d("RFCardManager", "Current Balance: ${result.currentBalance")
+                Log.d("RFCardManager", "Time           : ${RFCardManager.getInstance().processTimeMillis / 1000}s")
+                }
+                RFCardManager.getInstance().close()
+            }
+..
 ```

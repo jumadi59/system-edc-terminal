@@ -28,6 +28,7 @@ Add Implementation in Gradle
 dependencies {
     implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk14', version: '1.70'
+    implementation 'com.github.anggastudio:Printama:0.9.7'
     implementation files('libs/core.aar')
     implementation files('libs/prepaid-lib.aar')
     implementation files('libs/device-{name}.aar')
